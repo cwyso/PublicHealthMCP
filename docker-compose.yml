@@ -1,0 +1,11 @@
+services:
+  mcp:
+    build: .
+    container_name: public-health-mcp
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
