@@ -1,5 +1,6 @@
 """Tests for the bare-bones FastMCP server."""
 
+import pytest
 from fastmcp import Client
 
 from src.server import health_check, mcp
@@ -28,13 +29,12 @@ async def test_health_check_callable_via_mcp_client():
             (block.text for block in result.content if hasattr(block, "text")),
             None,
         )
-        assert text == "ok", f"expected 'ok', got {text!r} (full content: {result.content!r})"
+        msg = f"expected 'ok', got {text!r} (full content: {result.content!r})"
+        assert text == "ok", msg
 
 
 async def test_unknown_tool_raises():
-    """Calling a tool that doesn't exist raises an error rather than silently returning."""
-    import pytest
-
+    """Unknown tool name raises an error instead of silently returning."""
     async with Client(mcp) as client:
         with pytest.raises(Exception):
             await client.call_tool("does_not_exist", {})

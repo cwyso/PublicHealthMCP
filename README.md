@@ -1,5 +1,7 @@
 # Public Health MCP
 
+[![CI](https://github.com/cwyso/PublicHealthMCP/actions/workflows/ci.yml/badge.svg)](https://github.com/cwyso/PublicHealthMCP/actions/workflows/ci.yml)
+
 An MCP server that ingests public FDA and public health news and exposes it
 as structured tools and resources for AI agents.
 
