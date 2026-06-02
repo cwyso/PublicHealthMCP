@@ -1,6 +1,13 @@
 pytest
 pytest-cov
+pytest-asyncio
 black
+ruff
 pip-tools
 fastmcp
 httpx
+python-dotenv
+chromadb
+sentence-transformers
+anthropic
+feedparser
