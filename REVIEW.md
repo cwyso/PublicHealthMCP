@@ -28,6 +28,14 @@ Style and naming suggestions are 🟡 Nit at most.
   scope for this review.
 - **Test coverage of new behavior.** New code paths need at least one happy-path
   test and one failure-mode test. Missing either = 🔴 Important.
+- **Tool proliferation / selection quality.** Agents select tools by
+  name + description, so near-duplicate tools degrade selection. A new
+  per-source tool must have semantics genuinely distinct from existing tools.
+  Cross-source value belongs in capability tools (e.g. `get_recent`,
+  `semantic_search`) that live in `src/aggregate.py`, NOT in N×M per-source
+  lookalikes. Flag a new tool that merely re-slices what an existing tool
+  already returns. 🟡 Nit normally; 🔴 Important if it duplicates an existing
+  tool's data and intent.
 
 ## Cap the nits
 
@@ -38,8 +46,8 @@ Report at most 5 Nits per review. If more were found, end the summary with
 
 - Anything CI already enforces: `ruff check`, `black --check`, `pip-audit`,
   `docker build` — those gates run on every PR and red CI blocks merge
-- Captured test fixtures under `tests/fixtures/` — real-world data, not code
-  we wrote or maintain
+- Captured test fixtures under `tests/**/fixtures/` — real-world data, not
+  code we wrote or maintain
 - Documentation polish (typos, prose) unless the doc is now factually wrong
 
 ## Summary shape

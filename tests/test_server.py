@@ -1,8 +1,9 @@
 """Tests for the root FastMCP server.
 
-Covers the root server's own tool (``health_check``) and that the FDA tools
-are registered under their ``fda_``-prefixed names. Per-tool behavior is
-tested in tests/fda/test_tools.py.
+Covers ``health_check``, that source tools register under their ``fda_`` prefix,
+that the cross-source ``get_recent`` tool is present, and that a prefixed tool
+is callable end-to-end through an injected, pre-populated store. Per-tool
+behavior lives in tests/fda/test_tools.py and tests/test_aggregate.py.
 """
 
 from datetime import datetime, timezone
@@ -11,9 +12,10 @@ from unittest.mock import AsyncMock
 import pytest
 from fastmcp import Client
 
+from src import aggregate
 from src.fda import tools as fda_tools
 from src.fda.ingestion import FeedItem, FeedStore
-from src.server import health_check, mcp
+from src.server import build_server, health_check, mcp
 
 PREFIXED_FDA_TOOLS = {
     "fda_get_recalls",
@@ -22,7 +24,9 @@ PREFIXED_FDA_TOOLS = {
 }
 
 
-# --- health_check -------------------------------------------------------------
+def _text(result) -> str:
+    """Join the text content blocks of a tool-call result."""
+    return " ".join(b.text for b in result.content if hasattr(b, "text"))
 
 
 def test_health_check_returns_ok():
@@ -54,30 +58,26 @@ async def test_unknown_tool_raises():
             await client.call_tool("does_not_exist", {})
 
 
-# --- FDA tool registration ----------------------------------------------------
-
-
-async def test_fda_tools_registered_with_prefix():
-    """The FDA tools are exposed through the root server with the fda_ prefix.
-
-    Proves register_fda(mcp) attached the tools under their prefixed names and
-    that the bare function names do not leak onto the server.
-    """
+async def test_tools_registered():
+    """FDA tools register under fda_ prefix; the cross-source get_recent is present."""
     async with Client(mcp) as client:
-        tools = await client.list_tools()
-    names = {t.name for t in tools}
+        names = {t.name for t in await client.list_tools()}
 
     missing = PREFIXED_FDA_TOOLS - names
     assert not missing, f"missing prefixed FDA tools: {missing}"
-    # The bare function names must NOT be exposed as tools.
+    assert "get_recent" in names
+    # Bare core-function names must NOT be exposed as tools.
     assert "get_recalls" not in names
+    assert "recent" not in names
 
 
 async def test_prefixed_fda_tool_is_callable(monkeypatch):
-    """A prefixed FDA tool can be invoked through the root server.
+    """A prefixed FDA tool is invokable through a server built on a seeded store.
 
-    Stubs refresh (no network) and seeds the store so the call returns data.
+    build_server(store) gives an isolated server bound to our store, so no
+    global state leaks between tests. Refresh is stubbed (no network).
     """
+    monkeypatch.setattr(fda_tools, "refresh_if_stale", AsyncMock(return_value=None))
     store = FeedStore()
     store.update(
         "fda_recalls",
@@ -93,12 +93,84 @@ async def test_prefixed_fda_tool_is_callable(monkeypatch):
             )
         ],
     )
-    monkeypatch.setattr(fda_tools, "_store", store)
-    monkeypatch.setattr(fda_tools, "refresh_if_stale", AsyncMock(return_value=None))
+    server = build_server(store)
 
-    async with Client(mcp) as client:
+    async with Client(server) as client:
         result = await client.call_tool("fda_get_recalls", {"limit": 5})
 
     text_blocks = [b for b in result.content if hasattr(b, "text")]
     assert text_blocks, f"expected text content, got {result.content!r}"
     assert "Test recall" in text_blocks[0].text
+
+
+async def test_get_recent_callable_spans_sources(monkeypatch):
+    """get_recent reaches across sources end-to-end through the server."""
+    monkeypatch.setattr(aggregate, "refresh_if_stale", AsyncMock(return_value=None))
+    store = FeedStore()
+    store.update(
+        "fda_recalls",
+        [
+            FeedItem(
+                id="r1",
+                source="fda_recalls",
+                title="Recall one",
+                summary="...",
+                url="https://example.com/r1",
+                published_at=datetime.now(timezone.utc),
+                raw={},
+            )
+        ],
+    )
+    store.update(
+        "fda_drugs",
+        [
+            FeedItem(
+                id="d1",
+                source="fda_drugs",
+                title="Drug update one",
+                summary="...",
+                url="https://example.com/d1",
+                published_at=datetime.now(timezone.utc),
+                raw={},
+            )
+        ],
+    )
+    server = build_server(store)
+
+    async with Client(server) as client:
+        result = await client.call_tool("get_recent", {"limit": 10})
+
+    blob = _text(result)
+    assert "Recall one" in blob and "Drug update one" in blob
+
+
+async def test_all_tools_share_one_store(monkeypatch):
+    """The core claim of the DI refactor: build_server wires ONE store into
+    every tool. An item seeded once is visible through both a source-specific
+    tool and the cross-source tool — which only holds if they share a store.
+    """
+    monkeypatch.setattr(fda_tools, "refresh_if_stale", AsyncMock(return_value=None))
+    monkeypatch.setattr(aggregate, "refresh_if_stale", AsyncMock(return_value=None))
+    store = FeedStore()
+    store.update(
+        "fda_recalls",
+        [
+            FeedItem(
+                id="shared-1",
+                source="fda_recalls",
+                title="Shared recall",
+                summary="...",
+                url="https://example.com/shared-1",
+                published_at=datetime.now(timezone.utc),
+                raw={},
+            )
+        ],
+    )
+    server = build_server(store)
+
+    async with Client(server) as client:
+        via_source = await client.call_tool("fda_get_recalls", {"limit": 5})
+        via_aggregate = await client.call_tool("get_recent", {"limit": 5})
+
+    assert "Shared recall" in _text(via_source)
+    assert "Shared recall" in _text(via_aggregate)
