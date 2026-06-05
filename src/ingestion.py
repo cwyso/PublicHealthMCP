@@ -132,9 +132,7 @@ def parse_feed(source: str, body: bytes) -> list[FeedItem]:
             entry_id = _entry_id(source, raw_entry)
             title = raw_entry.get("title")
             link = raw_entry.get("link")
-            summary = (
-                raw_entry.get("summary") or raw_entry.get("description") or ""
-            )
+            summary = raw_entry.get("summary") or raw_entry.get("description") or ""
             published = _struct_to_datetime(raw_entry.get("published_parsed"))
 
             if not (entry_id and title and link and published):
@@ -223,9 +221,7 @@ class FeedStore:
         if source is not None:
             items = list(self._items.get(source, []))
         else:
-            items = [
-                item for src_items in self._items.values() for item in src_items
-            ]
+            items = [item for src_items in self._items.values() for item in src_items]
         if since is not None:
             items = [i for i in items if i.published_at >= since]
         items.sort(key=lambda i: i.published_at, reverse=True)
