@@ -24,3 +24,10 @@ as structured tools and resources for AI agents.
 cp .env.example .env
 docker compose up --build
 ```
+
+## Local PR review
+Before opening a PR, ask Claude Code to *"Use the pr-reviewer subagent to
+review my current diff."* The subagent reads `REVIEW.md`, `CLAUDE.md`, and
+`.claude/decisions/*.md`, then reports findings by severity. Free,
+on-demand, runs in a fresh context independent of whoever wrote the code.
+A CI-integrated equivalent is tracked in issue #21.
