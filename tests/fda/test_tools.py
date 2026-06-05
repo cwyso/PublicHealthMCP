@@ -1,8 +1,9 @@
-"""Tests for the FDA MCP tools (src.fda.tools).
+"""Tests for the FDA MCP tool core functions (src.fda.tools).
 
-The tool functions are called directly here. End-to-end reachability through
-the root server (under their ``fda_``-prefixed names) is covered in
-tests/test_server.py.
+The core functions take a ``FeedStore`` directly, so tests inject a store
+rather than monkeypatching a module global. ``refresh_if_stale`` is stubbed to
+keep tests offline. End-to-end reachability through the server (under the
+``fda_`` names) is covered in tests/test_server.py.
 """
 
 from datetime import datetime, timedelta, timezone
@@ -14,8 +15,7 @@ from src.fda import tools as fda_tools
 from src.fda.ingestion import FeedItem, FeedStore
 from src.fda.tools import get_drug_updates, get_recalls, get_safety_alerts
 
-# (source key, tool function) pairs for parametrized tests. The source keys are
-# the internal FeedStore identifiers, not the namespaced tool names.
+# (source key, core tool function) pairs for parametrized tests.
 FDA_TOOLS = [
     ("fda_recalls", get_recalls),
     ("fda_drugs", get_drug_updates),
@@ -24,17 +24,10 @@ FDA_TOOLS = [
 
 
 @pytest.fixture
-def fresh_store(monkeypatch):
-    """Swap in a fresh FeedStore and stub refresh_if_stale on the tools module.
-
-    Tests opt into populating the store; stubbing refresh prevents any network
-    access. Returns ``(store, refresh_mock)``.
-    """
-    store = FeedStore()
-    monkeypatch.setattr(fda_tools, "_store", store)
-    refresh_mock = AsyncMock(return_value=None)
-    monkeypatch.setattr(fda_tools, "refresh_if_stale", refresh_mock)
-    return store, refresh_mock
+def store(monkeypatch):
+    """A fresh FeedStore with refresh_if_stale stubbed (no network)."""
+    monkeypatch.setattr(fda_tools, "refresh_if_stale", AsyncMock(return_value=None))
+    return FeedStore()
 
 
 def _make_item(source: str, n: int, age_minutes: int = 0) -> FeedItem:
@@ -50,12 +43,11 @@ def _make_item(source: str, n: int, age_minutes: int = 0) -> FeedItem:
 
 
 @pytest.mark.parametrize("source,tool", FDA_TOOLS)
-async def test_tool_returns_serialized_items(fresh_store, source, tool):
+async def test_tool_returns_serialized_items(store, source, tool):
     """Each FDA tool returns its source's items as JSON-serializable dicts."""
-    store, _ = fresh_store
     store.update(source, [_make_item(source, i) for i in range(5)])
 
-    result = await tool()
+    result = await tool(store)
 
     assert isinstance(result, list)
     assert len(result) == 5
@@ -68,50 +60,49 @@ async def test_tool_returns_serialized_items(fresh_store, source, tool):
 
 
 @pytest.mark.parametrize("source,tool", FDA_TOOLS)
-async def test_tool_respects_limit(fresh_store, source, tool):
+async def test_tool_respects_limit(store, source, tool):
     """Each tool caps results at ``limit``."""
-    store, _ = fresh_store
     store.update(source, [_make_item(source, i) for i in range(30)])
 
-    result = await tool(limit=10)
+    result = await tool(store, limit=10)
     assert len(result) == 10
 
 
 @pytest.mark.parametrize("source,tool", FDA_TOOLS)
-async def test_tool_returns_empty_when_no_items(fresh_store, source, tool):
+async def test_tool_returns_empty_when_no_items(store, source, tool):
     """An empty store yields ``[]`` (no crash, no ``None``)."""
-    result = await tool()
+    result = await tool(store)
     assert result == []
 
 
 @pytest.mark.parametrize("source,tool", FDA_TOOLS)
-async def test_tool_clamps_nonpositive_limit(fresh_store, source, tool):
+async def test_tool_clamps_nonpositive_limit(store, source, tool):
     """``limit <= 0`` yields ``[]`` rather than dropping items off the end."""
-    store, _ = fresh_store
     store.update(source, [_make_item(source, i) for i in range(5)])
 
-    assert await tool(limit=0) == []
-    assert await tool(limit=-3) == []
+    assert await tool(store, limit=0) == []
+    assert await tool(store, limit=-3) == []
 
 
 @pytest.mark.parametrize("source,tool", FDA_TOOLS)
-async def test_tool_triggers_refresh(fresh_store, source, tool):
+async def test_tool_triggers_refresh(monkeypatch, source, tool):
     """Each tool awaits ``refresh_if_stale`` exactly once per call."""
-    _, refresh_mock = fresh_store
-    await tool()
+    refresh_mock = AsyncMock(return_value=None)
+    monkeypatch.setattr(fda_tools, "refresh_if_stale", refresh_mock)
+
+    await tool(FeedStore())
     refresh_mock.assert_awaited_once()
 
 
-async def test_tools_only_return_their_own_source(fresh_store):
+async def test_tools_only_return_their_own_source(store):
     """Cross-contamination check: one tool's results never include another's."""
-    store, _ = fresh_store
     store.update("fda_recalls", [_make_item("fda_recalls", 1)])
     store.update("fda_drugs", [_make_item("fda_drugs", 2)])
     store.update("fda_medwatch", [_make_item("fda_medwatch", 3)])
 
-    recalls = await get_recalls()
-    drugs = await get_drug_updates()
-    alerts = await get_safety_alerts()
+    recalls = await get_recalls(store)
+    drugs = await get_drug_updates(store)
+    alerts = await get_safety_alerts(store)
 
     assert {r["source"] for r in recalls} == {"fda_recalls"}
     assert {d["source"] for d in drugs} == {"fda_drugs"}
