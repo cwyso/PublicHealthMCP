@@ -1,18 +1,14 @@
 """FDA RSS feed ingestion.
 
 Pure data layer: fetches FDA RSS feeds, parses entries into a normalized
-:class:`FeedItem` model, and exposes an in-memory :class:`FeedStore` with
-TTL-aware refresh helpers.
+:class:`FeedItem`, and exposes an in-memory :class:`FeedStore` with TTL-aware
+refresh helpers.
 
-MCP exposure is intentionally out of scope; see issue #4.
-
-Robustness notes:
-- :func:`parse_feed` never raises. Malformed individual entries are skipped;
-  a whole-feed parse failure yields ``[]``.
+Robustness contract:
+- :func:`parse_feed` never raises — bad entries are skipped, a whole-feed
+  failure yields ``[]``.
 - :func:`fetch_and_parse` swallows network errors, timeouts, and 5xx
-  responses (returns ``[]``). Callers can detect failures via
-  :meth:`FeedStore.last_refreshed`.
-- A single bad entry never poisons an otherwise-valid feed.
+  (returns ``[]``); detect failures via :meth:`FeedStore.last_refreshed`.
 """
 
 from __future__ import annotations

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" xml:base="http://www.fda.gov/">
+  <channel>
+    <title>MedWatch Safety Alerts RSS Feed</title>
+    <link>http://www.fda.gov/</link>
+    <description/>
+    <language>en</language>
+    <item>
+      <title>UPDATE: Hintermann Series H3 Total Ankle Replacement Has a Higher-Than-Expected Risk of Device Failure: FDA Safety Communication</title>
+      <link>http://www.fda.gov/medical-devices/safety-communications/update-hintermann-series-h3-total-ankle-replacement</link>
+      <description>Learn more about recommendations for patients who are considering a Hintermann Series H3 TAR system or who have one; recommendations for health care providers.</description>
+      <pubDate>Wed, 03 Jun 2026 00:00:00 EDT</pubDate>
+      <dc:creator>FDA</dc:creator>
+      <guid isPermaLink="true">http://www.fda.gov/medical-devices/safety-communications/update-hintermann-series-h3-total-ankle-replacement</guid>
+    </item>
+    <item>
+      <title>Anesthesia Kit Correction: Becton Dickinson Issues Correction for BD Spinal Trays Containing Bupivacaine Ampules</title>
+      <link>http://www.fda.gov/medical-devices/medical-device-recalls-and-early-alerts/anesthesia-kit-correction-becton-dickinson</link>
+      <description>BD is correcting affected Spinal Trays by removing Bupivacaine ampule components.</description>
+      <pubDate>Wed, 03 Jun 2026 00:00:00 EDT</pubDate>
+      <dc:creator>FDA</dc:creator>
+      <guid isPermaLink="true">http://www.fda.gov/medical-devices/medical-device-recalls-and-early-alerts/anesthesia-kit-correction-becton-dickinson</guid>
+    </item>
+  </channel>
+</rss>

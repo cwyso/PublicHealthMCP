@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" xml:base="http://www.fda.gov/">
+  <channel>
+    <title>What's New: Drugs RSS Feed</title>
+    <link>http://www.fda.gov/</link>
+    <description/>
+    <language>en</language>
+    <item>
+      <title>Compounding Information for States</title>
+      <link>http://www.fda.gov/drugs/human-drug-compounding/compounding-information-states</link>
+      <description>FDA collaborates with state officials in a variety of ways, including by sharing information about compounders who engage in poor practices that could put patients at risk.</description>
+      <pubDate>Wed, 03 Jun 2026 16:08:10 EDT</pubDate>
+      <dc:creator>FDA</dc:creator>
+      <guid isPermaLink="true">http://www.fda.gov/drugs/human-drug-compounding/compounding-information-states</guid>
+    </item>
+    <item>
+      <title>Fiscal Year 2026 Generic Drug Science and Research Initiatives Public Workshop - 06/08/2026</title>
+      <link>http://www.fda.gov/drugs/news-events-human-drugs/fiscal-year-2026-generic-drug-science-and-research-initiatives-public-workshop</link>
+      <description>This workshop provides an overview of the status of science and research initiatives for generic drugs and an opportunity for public input on these initiatives.</description>
+      <pubDate>Wed, 03 Jun 2026 15:47:27 EDT</pubDate>
+      <dc:creator>FDA</dc:creator>
+      <guid isPermaLink="true">http://www.fda.gov/drugs/news-events-human-drugs/fiscal-year-2026-generic-drug-science-and-research-initiatives-public-workshop</guid>
+    </item>
+  </channel>
+</rss>
