@@ -15,8 +15,10 @@ thinking. Form your own opinion from the code itself.
 2. **`REVIEW.md`** — review-only rules; these take highest priority
 3. **`.claude/decisions/*.md`** — locked design decisions (for the HIL rule check)
 4. **The diff** — run `git diff main...HEAD` to see branch-vs-main changes.
-   Run `git status` to see uncommitted work too. If the base branch isn't
-   `main`, ask which branch the PR targets before guessing.
+   Run `git status` to see uncommitted work too. Default to `main` as the
+   base branch; if the parent passed a different base in the invocation
+   prompt, use that instead. Note the base you reviewed against in your
+   report so the reader can sanity-check.
 
 ## Rules — apply in this order
 

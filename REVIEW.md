@@ -20,10 +20,12 @@ Style and naming suggestions are 🟡 Nit at most.
 - **MCP tool docstrings.** New FastMCP tools (functions decorated with
   `@mcp.tool()`) MUST have a docstring — FastMCP exposes the docstring as the
   tool description to Claude clients. Missing docstring = 🔴 Important.
-- **Runtime deps in both places.** New runtime dependencies must be in BOTH
-  `requirements.txt` AND `devcontainer/docker/dev-requirements.txt`. Drift
-  between the two is 🔴 Important (CI builds from the latter; prod from the
-  former).
+- **Runtime deps in both places.** A runtime dependency added by this PR
+  must appear in BOTH `requirements.txt` AND
+  `devcontainer/docker/dev-requirements.txt`. A new dep in one but not the
+  other is 🔴 Important (CI builds from the latter; prod from the former).
+  Pre-existing drift between the two files unrelated to the PR is out of
+  scope for this review.
 - **Test coverage of new behavior.** New code paths need at least one happy-path
   test and one failure-mode test. Missing either = 🔴 Important.
 
