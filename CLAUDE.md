@@ -6,6 +6,12 @@
 - Create a branch for each ticket.
 - Test and edge case handling is king.
 
+## PR review
+- Before invoking `gh pr create`, always spawn the `pr-reviewer` subagent on
+  the current branch's diff. See `REVIEW.md` for the rules it applies.
+- If the reviewer reports Important findings, address them (or get explicit
+  user override) before opening the PR.
+
 
 # FDA MCP Server — Claude Code Context
 
