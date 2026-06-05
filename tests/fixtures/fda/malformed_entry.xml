@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Synthetic test feed with one bad entry</title>
+    <link>https://example.com/feed</link>
+    <description>Used to verify parser skips bad entries instead of failing the whole feed.</description>
+    <language>en</language>
+
+    <item>
+      <title>Valid item one</title>
+      <link>https://example.com/items/1</link>
+      <description>A perfectly fine item.</description>
+      <pubDate>Wed, 03 Jun 2026 12:00:00 EDT</pubDate>
+      <dc:creator>Test</dc:creator>
+      <guid isPermaLink="true">https://example.com/items/1</guid>
+    </item>
+
+    <item>
+      <!-- Missing link, missing pubDate, missing guid: this entry is unusable -->
+      <title>Malformed item without link or date</title>
+      <description>This entry is missing required fields and should be skipped by the parser.</description>
+    </item>
+
+    <item>
+      <title>Valid item two</title>
+      <link>https://example.com/items/3</link>
+      <description>Another fine item.</description>
+      <pubDate>Wed, 03 Jun 2026 13:00:00 EDT</pubDate>
+      <dc:creator>Test</dc:creator>
+      <guid isPermaLink="true">https://example.com/items/3</guid>
+    </item>
+
+  </channel>
+</rss>

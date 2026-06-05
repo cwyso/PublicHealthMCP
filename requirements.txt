@@ -1,3 +1,5 @@
 fastmcp
 httpx
 python-dotenv
+feedparser
+pydantic>=2
