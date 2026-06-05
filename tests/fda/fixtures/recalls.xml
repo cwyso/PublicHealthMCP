@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" xml:base="http://www.fda.gov/">
+  <channel>
+    <title>Food and Drugs Administration--Recalls/Safety Alerts</title>
+    <link>http://www.fda.gov/</link>
+    <description/>
+    <language>en</language>
+    <item>
+      <title>Total Nutrition Inc. Expands Recall of Moringa Capsules Because of Possible Health Risk</title>
+      <link>http://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/total-nutrition-inc-expands-recall</link>
+      <description>Total Nutrition Inc. of Deer Park, NY is voluntarily expanding its recall of Moringa Capsules due to the potential to be contaminated with Salmonella.</description>
+      <pubDate>Tue, 02 Jun 2026 11:24:00 EDT</pubDate>
+      <dc:creator>FDA</dc:creator>
+      <guid isPermaLink="true">http://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/total-nutrition-inc-expands-recall</guid>
+    </item>
+    <item>
+      <title>Champion Foods Recalls Some Batches of Motor City Pizza Co. 5 Cheese Bread Because of Possible Health Risk</title>
+      <link>http://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/champion-foods-recalls-5-cheese-bread</link>
+      <description>Champion Foods LLC of New Boston, Michigan, is voluntarily recalling certain batches of Motor City Pizza Co. 5 Cheese Bread because they have the potential to be contaminated with Salmonella.</description>
+      <pubDate>Fri, 29 May 2026 15:03:00 EDT</pubDate>
+      <dc:creator>FDA</dc:creator>
+      <guid isPermaLink="true">http://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/champion-foods-recalls-5-cheese-bread</guid>
+    </item>
+  </channel>
+</rss>

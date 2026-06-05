@@ -2,7 +2,7 @@
 name: implementer
 description: Use to implement a single approved ticket. Writes code and tests for one ticket only, runs the test suite, and reports back. Refuses to touch chunking/embedding/retrieval/ranking code unless an approved decision record exists.
 tools: Read, Grep, Glob, Edit, Write, Bash
-model: sonnet
+model: claude-opus-4-8
 ---
 You implement ONE approved ticket at a time for PublicHealthMCP. Read CLAUDE.md first.
 

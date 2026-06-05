@@ -1,13 +1,5 @@
-"""Tests for src.ingestion.
-
-Coverage:
-- Parsing each of the three real FDA feed fixtures (captured live)
-- Skipping malformed individual entries without failing the whole feed
-- Returning [] on garbage / empty input
-- Swallowing network errors (timeout, 5xx, connection refused)
-- FeedStore get/filter/staleness semantics
-- refresh_if_stale only touches stale sources
-"""
+"""Tests for src.fda.ingestion: parsing, robustness, network errors, and the
+TTL-aware FeedStore."""
 
 from __future__ import annotations
 
@@ -17,8 +9,8 @@ from pathlib import Path
 import httpx
 import pytest
 
-from src import ingestion
-from src.ingestion import (
+from src.fda import ingestion
+from src.fda.ingestion import (
     DEFAULT_TTL,
     FDA_FEEDS,
     FeedItem,
@@ -29,7 +21,7 @@ from src.ingestion import (
     refresh_if_stale,
 )
 
-FIXTURES = Path(__file__).parent / "fixtures" / "fda"
+FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def _load_fixture(name: str) -> bytes:

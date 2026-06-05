@@ -7,6 +7,7 @@ pip-tools
 fastmcp
 httpx
 python-dotenv
+pydantic>=2
 chromadb
 sentence-transformers
 anthropic
