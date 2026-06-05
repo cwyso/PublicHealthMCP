@@ -67,9 +67,8 @@ async def test_fda_tools_registered_with_prefix():
         tools = await client.list_tools()
     names = {t.name for t in tools}
 
-    assert PREFIXED_FDA_TOOLS <= names, (
-        f"expected prefixed FDA tools {PREFIXED_FDA_TOOLS} in {names}"
-    )
+    missing = PREFIXED_FDA_TOOLS - names
+    assert not missing, f"missing prefixed FDA tools: {missing}"
     # The bare function names must NOT be exposed as tools.
     assert "get_recalls" not in names
 
