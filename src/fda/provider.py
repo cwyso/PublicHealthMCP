@@ -54,7 +54,9 @@ class FDAProvider(Provider):
                 # FastMCP exposes the description to clients; a None here would
                 # silently ship a description-less tool. Fail loudly instead.
                 raise ValueError(f"core function for {name!r} is missing a docstring")
-            built.append(Tool.from_function(wrapper, name=name, description=core.__doc__))
+            built.append(
+                Tool.from_function(wrapper, name=name, description=core.__doc__)
+            )
         return built
 
     # Thin wrappers. Bound-method signature is (limit: int = 20) — what the tool
