@@ -249,3 +249,23 @@ async def test_refresh_all_touches_every_source(monkeypatch) -> None:
     assert set(fetched) == set(FDA_FEEDS.keys())
     for src in FDA_FEEDS:
         assert store.last_refreshed(src) is not None
+
+
+async def test_refresh_reuses_provided_client_and_does_not_close_it(monkeypatch):
+    """A supplied client is reused for fetches and left open (caller owns it)."""
+    seen: list[httpx.AsyncClient] = []
+
+    async def fake_fetch_and_parse(source, url, *, client=None):
+        seen.append(client)
+        return []
+
+    monkeypatch.setattr(ingestion, "fetch_and_parse", fake_fetch_and_parse)
+
+    caller_client = httpx.AsyncClient()
+    await refresh_if_stale(
+        FeedStore(), feeds={"fda_recalls": "http://x"}, client=caller_client
+    )
+
+    assert seen and all(c is caller_client for c in seen)
+    assert not caller_client.is_closed  # refresh must not close a borrowed client
+    await caller_client.aclose()
