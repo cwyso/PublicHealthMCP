@@ -6,11 +6,15 @@
 - Create a branch for each ticket.
 - Test and edge case handling is king.
 
-## PR review
+## PR review (human-in-the-loop)
 - Before invoking `gh pr create`, always spawn the `pr-reviewer` subagent on
   the current branch's diff. See `REVIEW.md` for the rules it applies.
-- If the reviewer reports Important findings, address them (or get explicit
-  user override) before opening the PR.
+- Always present the reviewer's full findings (the tally and every finding).
+- If there are NO Important findings, you may address the Nits and proceed,
+  telling me exactly what was fixed.
+- If there is ANY Important finding, STOP: do not fix, dismiss, or open the PR
+  until I decide what to address or override.
+- I have final say on every finding.
 
 
 # FDA MCP Server — Claude Code Context
