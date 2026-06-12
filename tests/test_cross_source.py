@@ -19,9 +19,7 @@ from src.fda.ingestion import FeedItem, FeedStore
 @pytest.fixture
 def store(monkeypatch):
     """A fresh FeedStore with refresh_if_stale stubbed (no network)."""
-    monkeypatch.setattr(
-        cross_source, "refresh_if_stale", AsyncMock(return_value=None)
-    )
+    monkeypatch.setattr(cross_source, "refresh_if_stale", AsyncMock(return_value=None))
     return FeedStore()
 
 

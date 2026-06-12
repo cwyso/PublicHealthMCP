@@ -93,9 +93,7 @@ async def test_tool_triggers_refresh_scoped_to_own_feed(monkeypatch, source, too
 
     feed_store = FeedStore()
     await tool(feed_store)
-    refresh_mock.assert_awaited_once_with(
-        feed_store, feeds={source: FDA_FEEDS[source]}
-    )
+    refresh_mock.assert_awaited_once_with(feed_store, feeds={source: FDA_FEEDS[source]})
 
 
 async def test_tools_only_return_their_own_source(store):
