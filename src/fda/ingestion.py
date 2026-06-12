@@ -16,8 +16,6 @@ from __future__ import annotations
 import calendar
 import hashlib
 import logging
-from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from time import struct_time
 from typing import Any
@@ -244,35 +242,15 @@ class FeedStore:
 # --- Refresh orchestrators ----------------------------------------------------
 
 
-@asynccontextmanager
-async def _borrow_client(
-    client: httpx.AsyncClient | None,
-) -> AsyncIterator[httpx.AsyncClient]:
-    """Yield ``client`` if provided (caller owns it), else a short-lived one.
-
-    Lets a caller with a lifespan-owned client (e.g. a provider) reuse it
-    instead of opening a new connection pool per refresh.
-    """
-    if client is not None:
-        yield client
-        return
-    owned = httpx.AsyncClient(timeout=DEFAULT_TIMEOUT)
-    try:
-        yield owned
-    finally:
-        await owned.aclose()
-
-
 async def refresh_all(
     store: FeedStore,
     feeds: dict[str, str] | None = None,
-    client: httpx.AsyncClient | None = None,
 ) -> None:
     """Refresh every source unconditionally."""
     feeds = feeds if feeds is not None else FDA_FEEDS
-    async with _borrow_client(client) as http:
+    async with httpx.AsyncClient(timeout=DEFAULT_TIMEOUT) as client:
         for source, url in feeds.items():
-            items = await fetch_and_parse(source, url, client=http)
+            items = await fetch_and_parse(source, url, client=client)
             store.update(source, items)
 
 
@@ -280,14 +258,13 @@ async def refresh_if_stale(
     store: FeedStore,
     ttl: timedelta = DEFAULT_TTL,
     feeds: dict[str, str] | None = None,
-    client: httpx.AsyncClient | None = None,
 ) -> None:
     """Refresh only sources whose cached data is older than ``ttl``."""
     feeds = feeds if feeds is not None else FDA_FEEDS
     stale = {src: url for src, url in feeds.items() if store.is_stale(src, ttl)}
     if not stale:
         return
-    async with _borrow_client(client) as http:
+    async with httpx.AsyncClient(timeout=DEFAULT_TIMEOUT) as client:
         for source, url in stale.items():
-            items = await fetch_and_parse(source, url, client=http)
+            items = await fetch_and_parse(source, url, client=client)
             store.update(source, items)

@@ -12,7 +12,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from src.fda import tools as fda_tools
-from src.fda.ingestion import FeedItem, FeedStore
+from src.fda.ingestion import FDA_FEEDS, FeedItem, FeedStore
 from src.fda.tools import get_drug_updates, get_recalls, get_safety_alerts
 
 # (source key, core tool function) pairs for parametrized tests.
@@ -85,13 +85,17 @@ async def test_tool_clamps_nonpositive_limit(store, source, tool):
 
 
 @pytest.mark.parametrize("source,tool", FDA_TOOLS)
-async def test_tool_triggers_refresh(monkeypatch, source, tool):
-    """Each tool awaits ``refresh_if_stale`` exactly once per call."""
+async def test_tool_triggers_refresh_scoped_to_own_feed(monkeypatch, source, tool):
+    """Each tool refreshes exactly once, scoped to ITS feed only — a tool's
+    latency/failure must never depend on sibling feeds it doesn't read."""
     refresh_mock = AsyncMock(return_value=None)
     monkeypatch.setattr(fda_tools, "refresh_if_stale", refresh_mock)
 
-    await tool(FeedStore())
-    refresh_mock.assert_awaited_once()
+    feed_store = FeedStore()
+    await tool(feed_store)
+    refresh_mock.assert_awaited_once_with(
+        feed_store, feeds={source: FDA_FEEDS[source]}
+    )
 
 
 async def test_tools_only_return_their_own_source(store):

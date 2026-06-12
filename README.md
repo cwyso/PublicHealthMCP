@@ -9,15 +9,20 @@ as structured tools and resources for AI agents.
 - Python 3.11
 - FastMCP
 - Docker / docker-compose
-- ChromaDB for semantic search (RAG)
-- Deployed to AWS EC2
+- ChromaDB for semantic search (RAG) — planned
+- Target deployment: AWS EC2
 
 ## Tools
-- `get_fda_recalls()` — latest FDA recalls
-- `get_drug_approvals()` — recent drug approvals
-- `get_safety_alerts()` — FDA safety alerts
-- `get_public_health_news(topic)` — broader news via NewsAPI
-- `semantic_search(query)` — RAG-powered search across ingested content
+- `health_check()` — server liveness check
+- `fda_get_recalls(limit)` — latest FDA recalls and market withdrawals
+- `fda_get_drug_updates(limit)` — FDA "What's New: Drugs" feed (all drug
+  updates: guidances, workshops, AND approvals — the FDA publishes no
+  approvals-only RSS feed)
+- `fda_get_safety_alerts(limit)` — FDA MedWatch safety alerts
+- `get_recent(sources, limit)` — newest items merged across every source
+
+Planned: `get_public_health_news(topic)` (NewsAPI), `semantic_search(query)`
+(RAG over ingested content), CDC sources.
 
 ## Run locally
 ```bash
