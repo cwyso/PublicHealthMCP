@@ -1,4 +1,4 @@
-"""Tests for src.aggregate (cross-source tools).
+"""Tests for src.cross_source (cross-source tools).
 
 The point of these tests: prove ``get_recent`` genuinely spans sources, not
 just FDA. We seed a fake second source (``cdc_test``) directly into the shared
@@ -11,15 +11,15 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from src import aggregate
-from src.aggregate import recent
+from src import cross_source
+from src.cross_source import recent
 from src.fda.ingestion import FeedItem, FeedStore
 
 
 @pytest.fixture
 def store(monkeypatch):
     """A fresh FeedStore with refresh_if_stale stubbed (no network)."""
-    monkeypatch.setattr(aggregate, "refresh_if_stale", AsyncMock(return_value=None))
+    monkeypatch.setattr(cross_source, "refresh_if_stale", AsyncMock(return_value=None))
     return FeedStore()
 
 
