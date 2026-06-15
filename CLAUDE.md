@@ -48,31 +48,39 @@ EC2 with a live public URL.
 - AWS EC2 for deployment
 
 ## Project Structure
-fda-mcp/
+PublicHealthMCP/
 ├── devcontainer/
 ├── src/
-│   └── server.py
+│   ├── server.py        # composition root: build_server(), health_check, wiring
+│   ├── providers.py     # generic SourceProvider (binds the shared store, exposes a source's tools)
+│   ├── cross_source.py  # tools spanning all sources (get_recent)
+│   └── fda/
+│       ├── ingestion.py # FeedItem, FeedStore, fetch/parse, refresh helpers, FDA_FEEDS registry
+│       └── tools.py     # FDA tool functions + TOOL_FNS
+├── tests/               # mirrors src/ (tests/fda/, tests/test_*.py)
 ├── Dockerfile
 ├── docker-compose.yml
-├── .env.example
-├── .gitignore
-├── requirements.txt
+├── pyproject.toml       # pytest / black / ruff config
+├── requirements.txt     # runtime deps
 └── README.md
 
 ## Data Sources
-- FDA RSS feeds: https://www.fda.gov/about-fda/contact-fda/rss-feeds
-    - Drug approvals
-    - Recalls
-    - Safety alerts
-- CDC RSS feeds
-- NewsAPI.org (free tier) for broader public health news
+- FDA RSS feeds — recalls/market withdrawals, "What's New: Drugs", MedWatch
+  safety alerts. Live feed URLs are defined in `src/fda/ingestion.py`
+  (`FDA_FEEDS`), not duplicated here, to avoid drift. Notes: the drugs feed is
+  a firehose (guidances, workshops, AND approvals — there is no approvals-only
+  feed); the old `/about-fda/contact-fda/rss-feeds` index URL is dead.
+- CDC RSS feeds — planned.
+- NewsAPI.org (free tier) for broader public-health news — planned.
 
-## Planned MCP Tools
-- `get_fda_recalls()` — latest FDA recalls
-- `get_drug_approvals()` — recent drug approvals
-- `get_safety_alerts()` — FDA safety alerts
-- `get_public_health_news(topic: str)` — broader news via NewsAPI
-- `semantic_search(query: str)` — RAG powered search over ingested content
+## MCP Tools
+Shipped (names as exposed to clients; authoritative list lives in README and code):
+- `health_check()`
+- `fda_get_recalls(limit)`, `fda_get_drug_updates(limit)`, `fda_get_safety_alerts(limit)`
+- `get_recent(sources, limit)` — newest items merged across all sources
+Planned:
+- `get_public_health_news(topic)` — broader news via NewsAPI
+- `semantic_search(query)` — RAG-powered search over ingested content
 
 ## Build Order
 
