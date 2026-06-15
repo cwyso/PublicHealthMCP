@@ -30,6 +30,16 @@ cp .env.example .env
 docker compose up --build
 ```
 
+## Development
+Install the dev dependencies, then enable the pre-commit hooks once:
+```bash
+pip install -r devcontainer/docker/dev-requirements.txt
+pre-commit install
+```
+`black` and `ruff` then run automatically on every commit, with versions
+pinned to match CI — so formatting/lint issues are caught locally instead of
+on a pushed PR. Run them against everything with `pre-commit run --all-files`.
+
 ## Local PR review
 Before opening a PR, ask Claude Code to *"Use the pr-reviewer subagent to
 review my current diff."* The subagent reads `REVIEW.md`, `CLAUDE.md`, and

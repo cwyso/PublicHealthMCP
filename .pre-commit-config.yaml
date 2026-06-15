@@ -1,0 +1,18 @@
+# Formatting/lint enforced before every commit so format-only failures never
+# reach CI. Versions are pinned to match devcontainer/docker/dev-requirements.txt
+# and the CI lint job — local and CI make identical decisions.
+#
+# One-time setup per clone:  pre-commit install
+# Run against everything:     pre-commit run --all-files
+#
+# black and ruff read their config from pyproject.toml (line length, rule set),
+# the same config CI uses.
+repos:
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 25.1.0
+    hooks:
+      - id: black
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.17
+    hooks:
+      - id: ruff-check

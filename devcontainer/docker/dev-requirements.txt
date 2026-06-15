@@ -1,8 +1,11 @@
 pytest
 pytest-cov
 pytest-asyncio
-black
-ruff
+# Formatters pinned: local pre-commit, manual runs, and CI must make
+# identical decisions. Bump in lockstep with .pre-commit-config.yaml.
+black==25.1.0
+ruff==0.15.17
+pre-commit
 pip-tools
 fastmcp
 httpx

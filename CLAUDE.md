@@ -5,6 +5,10 @@
 - Never push directly to main.
 - Create a branch for each ticket.
 - Test and edge case handling is king.
+- Formatting/lint is enforced by pre-commit (`black`, `ruff`), pinned in
+  `.pre-commit-config.yaml` and `devcontainer/docker/dev-requirements.txt` to
+  match CI. Run `black --check . && ruff check .` (or `pre-commit run
+  --all-files`) before pushing — never push code you haven't format-checked.
 
 ## PR review (human-in-the-loop)
 - Before invoking `gh pr create`, always spawn the `pr-reviewer` subagent on
