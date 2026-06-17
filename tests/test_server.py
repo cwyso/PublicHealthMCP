@@ -12,7 +12,7 @@ from unittest.mock import AsyncMock
 import pytest
 from fastmcp import Client
 
-from src import cross_source
+from src import cross_source_tools
 from src.fda import tools as fda_tools
 from src.fda.ingestion import FeedItem, FeedStore
 from src.server import build_server, health_check, mcp
@@ -105,7 +105,9 @@ async def test_prefixed_fda_tool_is_callable(monkeypatch):
 
 async def test_get_recent_callable_spans_sources(monkeypatch):
     """get_recent reaches across sources end-to-end through the server."""
-    monkeypatch.setattr(cross_source, "refresh_if_stale", AsyncMock(return_value=None))
+    monkeypatch.setattr(
+        cross_source_tools, "refresh_if_stale", AsyncMock(return_value=None)
+    )
     store = FeedStore()
     store.update(
         "fda_recalls",

@@ -3,3 +3,4 @@ httpx
 python-dotenv
 feedparser
 pydantic>=2
+trafilatura>=2.0.0
