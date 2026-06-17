@@ -3,7 +3,7 @@
 Covers ``health_check``, that source tools register under their ``fda_`` prefix,
 that the cross-source ``get_recent`` tool is present, and that a prefixed tool
 is callable end-to-end through an injected, pre-populated store. Per-tool
-behavior lives in tests/fda/test_tools.py and tests/test_cross_source.py.
+behavior lives in tests/fda/test_tools.py and tests/test_cross_source_tools.py.
 """
 
 from datetime import datetime, timezone
@@ -152,7 +152,9 @@ async def test_all_tools_share_one_store(monkeypatch):
     tool and the cross-source tool — which only holds if they share a store.
     """
     monkeypatch.setattr(fda_tools, "refresh_if_stale", AsyncMock(return_value=None))
-    monkeypatch.setattr(cross_source, "refresh_if_stale", AsyncMock(return_value=None))
+    monkeypatch.setattr(
+        cross_source_tools, "refresh_if_stale", AsyncMock(return_value=None)
+    )
     store = FeedStore()
     store.update(
         "fda_recalls",
