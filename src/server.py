@@ -3,7 +3,7 @@
 A single FastMCP server with one shared :class:`FeedStore` owned here at the
 composition root and injected into each source. The shared store is keyed by
 source and aggregates across all of them, which is what lets cross-source tools
-(see ``src/cross_source.py``) span every source.
+(see ``src/cross_source_tools.py``) span every source.
 
 Each source contributes a list of tool functions, exposed through the generic
 :class:`~src.providers.SourceProvider` under the source's namespace. Adding a
@@ -15,7 +15,7 @@ Run locally with ``python -m src.server``.
 
 from fastmcp import FastMCP
 
-from src.cross_source import register as register_cross_source
+from src.cross_source_tools import register as register_cross_source
 from src.fda import tools as fda_tools
 from src.fda.ingestion import FeedStore
 from src.providers import SourceProvider

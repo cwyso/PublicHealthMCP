@@ -14,7 +14,7 @@ async def _serve(store: FeedStore, source: str, limit: int) -> list[dict]:
 
     Refresh is scoped to the one requested feed so a tool's latency and
     failure modes never depend on sibling feeds it doesn't read.
-    (Cross-source tools refresh the union themselves; see src/cross_source.py.)
+    (Cross-source tools refresh the union themselves; see src/cross_source_tools.py.)
 
     ``limit`` is clamped to ``>= 0`` so a negative value yields an empty list
     rather than silently dropping items off the end (e.g. ``[:-1]``).
