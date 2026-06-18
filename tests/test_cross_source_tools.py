@@ -1,4 +1,4 @@
-"""Tests for src.cross_source (cross-source tools).
+"""Tests for src.cross_source_tools (cross-source tools).
 
 The point of these tests: prove ``get_recent`` genuinely spans sources, not
 just FDA. We seed a fake second source (``cdc_test``) directly into the shared
